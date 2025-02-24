@@ -1,7 +1,6 @@
 plotly
 scikit-learn
 scipy
-itertools
 hmmlearn
 matplotlib
 numpy

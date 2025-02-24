@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from sklearn.metrics import confusion_matrix
 from scipy.stats import norm
-from itertools import permutations
+# from itertools import permutations
 from hmmlearn import hmm
 from matplotlib import cm
 
@@ -249,6 +249,31 @@ def visualize_hmm(data, model, N):
 
     figs = [fig_main, fig_accuracy, fig_trans]
     return figs
+
+def permutations(elements):
+    # Base case: if there's only one element, return it as a single permutation
+    if len(elements) == 0:
+        return []
+    if len(elements) == 1:
+        return [elements[:]]
+
+    # List to store all permutations
+    perm_list = []
+
+    # Iterate through the input list and calculate permutations
+    for i in range(len(elements)):
+        # Extract the current element
+        current_element = elements[i]
+
+        # Remaining list after excluding the current element
+        remaining_elements = elements[:i] + elements[i+1:]
+
+        # Generate all permutations of the remaining elements
+        for p in permutations(remaining_elements):
+            # Prepend the current element to each permutation of the remaining elements
+            perm_list.append([current_element] + p)
+
+    return perm_list
 
 # Function to calculate max similarity between two sequences
 def max_similarity(a, b):
