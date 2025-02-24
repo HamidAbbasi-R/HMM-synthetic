@@ -1,0 +1,7 @@
+plotly
+sklearn
+scipy
+itertools
+hmmlearn
+matplotlib
+numpy
