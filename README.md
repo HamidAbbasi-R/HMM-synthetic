@@ -28,8 +28,8 @@ This project is an interactive tool built using **Streamlit** to simulate, train
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/hmm-simulator.git
-   cd hmm-simulator
+   git clone https://github.com/HamidAbbasi-R/HMM-synhetic.git
+   cd HMM-synthetic
    ```
 
 2. Install dependencies:
