@@ -144,7 +144,9 @@ if st.session_state.data:
 fig_time = utils.plot_time_series(
     data['obs_train'],
     data['hid_states_train'], 
-    N)
+    data['prices'],
+    N,
+)
 fig_hist_true = utils.plot_histogram_synthetic_data(
     data['obs_train'], 
     data['hid_states_train'], 

@@ -25,8 +25,8 @@ def generate_observations(N, T, p_same, max_mean, vars_same, randomize, seed):
     if randomize:
         transition_matrix = np.random.rand(N, N)
         transition_matrix = transition_matrix / transition_matrix.sum(axis=1)[:, None]
-        emission_means = np.random.uniform(-5, 5, N).reshape(-1, 1)
-        emission_vars = np.random.uniform(0.1, 3, N).reshape(-1, 1)
+        emission_means = np.random.uniform(-0.5, 0.5, N).reshape(-1, 1)
+        emission_vars = np.random.uniform(0.01, 0.5, N).reshape(-1, 1)
         initial_state_distribution = np.random.dirichlet(np.ones(N))
     else:
         transition_matrix = np.ones((N, N)) * ((1 - p_same) / (N - 1))
@@ -44,11 +44,16 @@ def generate_observations(N, T, p_same, max_mean, vars_same, randomize, seed):
     hidden_states = np.array(hidden_states)
     observations = np.array(observations)
 
+    # treat observations as log return values of a stock price starting from 100
+    prices = np.exp(np.cumsum(observations/1e3))
+    prices = 100 * prices / prices[0]
+
     data = {
         'obs_train': observations[:T],
         'obs_forecast': observations[T:],
         'hid_states_train': hidden_states[:T],
         'hid_states_forecast': hidden_states[T:],
+        'prices': prices,
         'pi': initial_state_distribution,
         'means': emission_means,
         'vars': emission_vars,
@@ -58,16 +63,28 @@ def generate_observations(N, T, p_same, max_mean, vars_same, randomize, seed):
     return data
 
 # Visualize the time series data
-def plot_time_series(observations, hidden_states, N):
+def plot_time_series(
+        observations, 
+        hidden_states, 
+        prices,
+        N,
+        ):
     T_max_display = 1000
     colors, _ = get_colors(N)
 
     observations = observations[:T_max_display] if len(observations) > T_max_display else observations
     hidden_states = hidden_states[:T_max_display] if len(hidden_states) > T_max_display else hidden_states
+    prices = prices[:T_max_display] if len(prices) > T_max_display else prices
 
     obs = [[observations[i] if hidden_states[i] == state else np.nan for i in range(len(observations))] for state in range(N)]
 
-    fig = go.Figure()
+
+    fig = make_subplots(
+        rows=2, cols=1, 
+        shared_xaxes=True, 
+        vertical_spacing=0.05,
+        row_heights=[0.5, 0.5],
+    )
 
     for state in range(N):
         fig.add_trace(go.Scatter(
@@ -80,15 +97,24 @@ def plot_time_series(observations, hidden_states, N):
                 size=7,
                 line=dict(width=1, color='black'),
                 ),
-        ))
+        ), row=1, col=1)
+    fig.add_trace(go.Scatter(
+        x=np.arange(len(prices)),
+        y=prices,
+        mode='lines',
+        name='Stock Price',
+        # line=dict(color='black', width=2),
+    ), row=2, col=1)
+
     fig.update_layout(
         title='Hidden States and Observations',
-        xaxis_title='Time Step',
+        xaxis2_title='Time Step',
         yaxis_title='Observation Value',
-        legend=dict(
-            x=0,
-            y=1,
-        ),
+        yaxis2_title='Stock Price',
+        # legend=dict(
+        #     x=0,
+        #     y=1,
+        # ),
     )
     return fig
 
@@ -149,7 +175,7 @@ def plot_histogram_synthetic_data(observations, hidden_states, emission_means, e
 def train_hmm(observations, N, n_iter, covariance_type):
     # apply seed for reproducibility
     # np.random.seed(seed)
-    model = hmm.GaussianHMM(n_components=N, covariance_type=covariance_type, n_iter=n_iter)
+    model = hmm.GaussianHMM(n_components=N, covariance_type=covariance_type, n_iter=n_iter, verbose=True)
     model.fit(observations.reshape(-1, 1))
     return model
 
