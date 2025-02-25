@@ -1,4 +1,5 @@
 # Hidden Markov Model (HMM) Simulator
+You can try this app on streamlit servers [here](https://hamidabbasi-r-hmm-synthetic-hmm-streamlit-cs5fkq.streamlit.app/).
 
 ## Overview
 This project is an interactive tool built using **Streamlit** to simulate, train, and evaluate **Hidden Markov Models (HMMs)**. It allows users to generate synthetic data, train an HMM on that data, and assess the model's performance by comparing inferred hidden states with true hidden states. The tool is designed for learning and experimentation, making it ideal for students, researchers, and practitioners interested in probabilistic modeling.
